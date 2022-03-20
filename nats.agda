@@ -105,3 +105,49 @@ open import Data.Nat using (ℕ; zero; suc; _+_; _*_; _∸_)
   ≡⟨ refl ⟩
     suc n * m
   ∎
+
+
+∸-zero-n : ∀ (n : ℕ) → zero ∸ n ≡ zero
+∸-zero-n zero = refl
+∸-zero-n (suc n) = refl
+
+∸-zero-n+p : ∀ (n p : ℕ) → zero ∸ (n + p) ≡ zero
+∸-zero-n+p zero p = 
+  begin
+     zero ∸ (zero + p)
+  ≡⟨ refl ⟩
+    zero ∸ p
+  ≡⟨ ∸-zero-n p ⟩
+    zero
+  ∎
+∸-zero-n+p (suc n) p = 
+  begin
+     zero ∸ (suc n + p)
+  ≡⟨ refl ⟩
+    zero ∸ suc (n + p)
+  ≡⟨ ∸-zero-n (suc (n + p)) ⟩
+    zero
+  ∎
+
+
+
+∸-zero-n-p : ∀ (n p : ℕ) → zero ∸ n  ∸ p ≡ zero
+∸-zero-n-p zero p rewrite (∸-zero-n p) = refl
+∸-zero-n-p (suc n) p rewrite (∸-zero-n (suc n)) | (∸-zero-n p) = refl
+
+
+∸-|-assoc : ∀ (m n p : ℕ) → m ∸ n ∸ p ≡ m ∸ (n + p)
+∸-|-assoc zero n p rewrite ∸-zero-n-p n p | ∸-zero-n+p n p  = refl 
+∸-|-assoc (suc m) zero p = refl
+∸-|-assoc (suc m) (suc n) p = 
+ begin
+     suc m ∸ suc n ∸ p
+  ≡⟨ refl ⟩
+    m ∸ n ∸ p
+  ≡⟨ ∸-|-assoc m n p ⟩
+    m ∸ (n + p)
+  ≡⟨ refl ⟩
+    suc m ∸ suc (n + p)
+  ≡⟨ refl ⟩
+    suc m ∸ (suc n + p)
+  ∎
