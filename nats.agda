@@ -177,3 +177,41 @@ open import Data.Nat using (ℕ; zero; suc; _+_; _*_; _∸_; _^_)
     (m ^ suc n) * (m ^ p)
   ∎ 
 
+*-*swap : ∀ (m n p q : ℕ) → (m * n) * (p * q) ≡ (m * p) * (n * q)
+*-*swap m n p q 
+  rewrite *-assoc m n (p * q)
+  | *-comm p q 
+  | sym (*-assoc n q p) 
+  | *-comm (n * q) p 
+  | sym (*-assoc m p (n * q)) = refl
+
+^-distribʳ-* : ∀ (m n p : ℕ) → (m * n) ^ p ≡ (m ^ p) * (n ^ p)
+^-distribʳ-* m n zero = refl
+^-distribʳ-* m n (suc p) = 
+  begin 
+     ((m * n) ^ suc p)
+  ≡⟨ refl ⟩
+   (m * n) * ((m * n) ^ p)
+   ≡⟨ cong ( (m * n) *_) (^-distribʳ-* m n p) ⟩
+   (m * n) * ( (m ^ p) * (n ^ p))
+  ≡⟨ *-*swap m n (m ^ p) (n ^ p) ⟩
+    (m * (m ^ p)) * (n * (n ^ p))
+  ≡⟨ refl ⟩
+    (m ^ suc p) * (n ^ suc p)
+  ∎ 
+
+
+^-*-assoc : ∀ (m n p : ℕ) → (m ^ n) ^ p ≡ m ^ (n * p) 
+^-*-assoc m n zero rewrite *-zero n = refl
+^-*-assoc m n (suc p) = 
+  begin 
+     ((m ^ n) ^ suc p)
+  ≡⟨ refl ⟩
+    (m ^ n) * ((m ^ n) ^ p) 
+  ≡⟨ cong ((m ^ n) *_) (^-*-assoc m n p) ⟩
+    (m ^ n) * (m ^ (n * p) ) 
+  ≡⟨ sym (^-distribˡ-|-* m n (n * p)) ⟩
+    (m ^ (n + n * p))
+  ≡⟨ cong (m ^_) (sym (*-suc n p)) ⟩
+    (m ^ (n * suc p))
+  ∎ 
