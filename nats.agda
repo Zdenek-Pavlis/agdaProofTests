@@ -3,7 +3,7 @@ import Relation.Binary.PropositionalEquality as Eq
 open Eq using (_≡_; refl; cong; sym)
 open Eq.≡-Reasoning using (begin_; _≡⟨⟩_; step-≡; _∎)
 
-open import Data.Nat using (ℕ; zero; suc; _+_; _*_; _∸_)
+open import Data.Nat using (ℕ; zero; suc; _+_; _*_; _∸_; _^_)
 
 +-assoc′ : ∀ (m n p : ℕ) → (m + n) + p ≡ m + (n + p)
 +-assoc′ zero n p = refl
@@ -151,3 +151,29 @@ open import Data.Nat using (ℕ; zero; suc; _+_; _*_; _∸_)
   ≡⟨ refl ⟩
     suc m ∸ (suc n + p)
   ∎
+
+*-identity : ∀ (n : ℕ) → 1 * n ≡ n
+*-identity n = 
+  begin
+    (suc zero) * n
+  ≡⟨ refl ⟩
+    n + zero
+  ≡⟨ +-identity′ n ⟩
+    n
+  ∎ 
+
+^-distribˡ-|-* : ∀ (m n p : ℕ) → m ^ (n + p) ≡ (m ^ n) * (m ^ p)
+^-distribˡ-|-* m zero p rewrite *-identity (m ^ p) = refl
+^-distribˡ-|-* m (suc n) p = 
+  begin
+    (m ^ (suc n + p))
+  ≡⟨ refl ⟩
+    m * (m ^ (n + p))
+  ≡⟨ cong (m *_) (^-distribˡ-|-* m n p ) ⟩
+    m * ((m ^ n) * (m ^ p))
+  ≡⟨ sym (*-assoc m (m ^ n) (m ^ p)) ⟩
+    m * (m ^ n) * (m ^ p)
+  ≡⟨ refl ⟩
+    (m ^ suc n) * (m ^ p)
+  ∎ 
+
